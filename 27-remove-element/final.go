@@ -7,7 +7,7 @@ import (
 	"math"
 )
 
-func removeElement_final(nums []int, val int) int {
+func removeElementFinal(nums []int, val int) int {
 	k := 0
 
 	i := 0
@@ -36,10 +36,10 @@ func removeElement_final(nums []int, val int) int {
 
 func main() {
 	nums0 := []int{3, 2, 2, 3}
-	v0 := removeElement_final(nums0, 3)
+	v0 := removeElementFinal(nums0, 3)
 	fmt.Printf(" k = %d, nums = %d  \n\n", v0, nums0)
 
 	nums1 := []int{0, 1, 2, 2, 3, 0, 4, 2}
-	v1 := removeElement_final(nums1, 2)
+	v1 := removeElementFinal(nums1, 2)
 	fmt.Printf(" k = %d, nums = %d  \n\n", v1, nums1)
 }

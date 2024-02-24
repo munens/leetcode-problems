@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func merge(nums1 []int, m int, nums2 []int, n int) {
+func mergeFinal(nums1 []int, m int, nums2 []int, n int) {
 	if m == 0 {
 		copy(nums1[0:], nums2)
 		return
@@ -79,42 +79,42 @@ func merge(nums1 []int, m int, nums2 []int, n int) {
 
 func main() {
 	v0 := []int{}
-	merge(v0, 0, []int{1}, 1)
+	mergeFinal(v0, 0, []int{1}, 1)
 	fmt.Println(v0)
 	fmt.Println("\n")
 
 	v1 := []int{1, 2, 0}
-	merge(v1, 2, []int{}, 0)
+	mergeFinal(v1, 2, []int{}, 0)
 	fmt.Println(v1)
 	fmt.Println("\n")
 
 	v2 := []int{1, 2, 3, 0, 0, 0}
-	merge(v2, 3, []int{2, 5, 6}, 3)
+	mergeFinal(v2, 3, []int{2, 5, 6}, 3)
 	fmt.Println(v2)
 	fmt.Println("\n")
 
 	v3 := []int{3, 5, 7, 0, 0, 0, 0, 0}
-	merge(v3, 3, []int{2, 2, 4, 5, 9}, 5)
+	mergeFinal(v3, 3, []int{2, 2, 4, 5, 9}, 5)
 	fmt.Println(v3)
 	fmt.Println("\n")
 
 	v4 := []int{10, 11, 12, 15, 0, 0, 0, 0, 0, 0}
-	merge(v4, 4, []int{1, 2, 2, 8, 10, 15}, 6)
+	mergeFinal(v4, 4, []int{1, 2, 2, 8, 10, 15}, 6)
 	fmt.Println(v4)
 	fmt.Println("\n")
 
 	v5 := []int{-1, 0, 0, 3, 3, 3, 0, 0, 0}
-	merge(v5, 6, []int{1, 2, 2}, 3)
+	mergeFinal(v5, 6, []int{1, 2, 2}, 3)
 	fmt.Println(v5)
 	fmt.Println("\n")
 
 	v6 := []int{1, 0}
-	merge(v6, 1, []int{2}, 1)
+	mergeFinal(v6, 1, []int{2}, 1)
 	fmt.Println(v6)
 	fmt.Println("\n")
 
 	v7 := []int{-1, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0}
-	merge(v7, 5, []int{-1, -1, 0, 0, 1, 2}, 6)
+	mergeFinal(v7, 5, []int{-1, -1, 0, 0, 1, 2}, 6)
 	fmt.Println(v7)
 	fmt.Println("\n")
 }
