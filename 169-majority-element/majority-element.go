@@ -4,7 +4,6 @@ package main
 import "fmt"
 
 func majorityElement(nums []int) int {
-	maxV := 0
 	numsMap := make(map[int]int, len(nums))
 	for _, v := range nums {
 		if _, ok := numsMap[v]; ok {
@@ -12,15 +11,19 @@ func majorityElement(nums []int) int {
 		} else {
 			numsMap[v] = 1
 		}
-
-		if numsMap[v] > maxV {
-			maxV = v
-		}
 	}
 
 	fmt.Println(numsMap)
+	maxV := 0
+	elem := 0
+	for i, v := range numsMap {
+		if val, _ := numsMap[v]; val > maxV {
+			maxV = numsMap[v]
+			elem = i
+		}
+	}
 
-	return maxV
+	return elem
 }
 
 func main() {
@@ -29,4 +32,7 @@ func main() {
 
 	v1 := majorityElement([]int{2, 2, 1, 1, 1, 2, 2, 3, 3, 3, 6, 7, 7, 7, 7, 7})
 	fmt.Println("v1 = ", v1)
+
+	v3 := majorityElement([]int{6, 5, 5})
+	fmt.Println("v3 = ", v3)
 }
