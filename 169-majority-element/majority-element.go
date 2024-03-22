@@ -17,8 +17,8 @@ func majorityElement(nums []int) int {
 	maxV := 0
 	elem := 0
 	for i, v := range numsMap {
-		if val, _ := numsMap[v]; val > maxV {
-			maxV = numsMap[v]
+		if v > maxV {
+			maxV = v
 			elem = i
 		}
 	}
