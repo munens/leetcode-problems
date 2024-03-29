@@ -61,13 +61,13 @@ func canJump3(nums []int) bool {
 }
 
 func main() {
-	v0 := canJump2([]int{2, 3, 1, 1, 4})
+	v0 := canJump3([]int{2, 3, 1, 1, 4})
 	fmt.Printf("v0 = %t \n\n", v0)
 
-	v1 := canJump2([]int{3, 2, 1, 0, 4})
+	v1 := canJump3([]int{3, 2, 1, 0, 4})
 	fmt.Printf("v1 = %t \n\n", v1)
 
-	v2 := canJump2([]int{3, 2, 1, 3, 4})
+	v2 := canJump3([]int{3, 2, 1, 3, 4})
 	fmt.Printf("v2 = %t \n\n", v2)
 
 	// read this: https://leetcode.com/problems/jump-game/description/comments/1728717
