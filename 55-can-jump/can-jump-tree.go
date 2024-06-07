@@ -14,7 +14,7 @@ func CanJumpTree(nums []int) {
 
 	spew.Dump(t)
 
-	t.RoundTrip()
+	//t.RoundTrip()
 }
 
 func main() {

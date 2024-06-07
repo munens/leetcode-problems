@@ -1,6 +1,9 @@
 package tree
 
-import "github.com/davecgh/go-spew/spew"
+import (
+	"fmt"
+	"github.com/davecgh/go-spew/spew"
+)
 
 type Connector struct {
 	Prev *Node
@@ -10,7 +13,7 @@ type Connector struct {
 
 type Node struct {
 	V          int
-	Connectors []*Connector
+	Connectors *[]Connector
 }
 
 type Tree struct {
@@ -18,20 +21,51 @@ type Tree struct {
 	Size int
 }
 
+func (t *Tree) build(nums []int, n *Node, idx int) {
+	finIdx := len(nums) - 1
+	spew.Dump("tRoot: ", t.Root)
+	//fmt.Printf("%+v\n", t.Root.Connectors)
+	for _, conn := range *n.Connectors {
+		i := idx + conn.V
+
+		var n *Node
+		if i > finIdx {
+			n = NewLeaf()
+		} else {
+			v := nums[i]
+			n = NewNode(v)
+		}
+
+		conn.Next = n
+		t.build(nums, conn.Next, i)
+	}
+}
+
+func NewTree(nums []int) *Tree {
+	root := NewNode(nums[0])
+	t := &Tree{
+		Root: root,
+	}
+	t.build(nums, t.Root, 1)
+	fmt.Printf("%+v\n", t.Root.Connectors)
+	spew.Dump(t)
+	return t
+}
+
 func NewNode(v int) *Node {
 	n := &Node{
 		V: v,
 	}
 
-	var connectors []*Connector
+	var connectors []Connector
 	for i := 1; i <= v; i++ {
-		connectors = append(connectors, &Connector{
+		connectors = append(connectors, Connector{
 			Prev: n,
 			V:    i,
 		})
 	}
 
-	n.Connectors = connectors
+	n.Connectors = &connectors
 
 	return n
 }
@@ -44,89 +78,88 @@ func NewLeaf() *Node {
 	return n
 }
 
-func buildTree(nums []int, n *Node, idx int) {
-	compIdx := len(nums)
-	finIdx := compIdx - 1
-	for _, conn := range n.Connectors {
-		i := idx + conn.V
+//func buildTree(nums []int, n *Node, idx int) {
+//	finIdx := len(nums) - 1
+//	for _, conn := range n.Connectors {
+//		i := idx + conn.V
+//
+//		var n *Node
+//		if i > finIdx {
+//			n = NewLeaf()
+//		} else {
+//			v := nums[i]
+//			n = NewNode(v)
+//		}
+//
+//		conn.Next = n
+//		buildTree(nums, n, i)
+//	}
+//
+//}
+//
+//func NewTree(nums []int) *Tree {
+//	root := NewNode(nums[0])
+//	t := &Tree{
+//		Root: root,
+//	}
+//	buildTree(nums, t.Root, 0)
+//	return t
+//}
 
-		var n *Node
-		if i > finIdx {
-			n = NewLeaf()
-		} else {
-			v := nums[i]
-			n = NewNode(v)
-		}
-
-		conn.Next = n
-		buildTree(nums, n, i)
-	}
-
-}
-
-func NewTree(nums []int) *Tree {
-	root := NewNode(nums[0])
-	t := &Tree{
-		Root: root,
-	}
-	buildTree(nums, t.Root, 0)
-	return t
-}
-
-type result struct {
-	V      *bool
-	Values []int
-	Jumps  []int
-}
-
-func (r *result) setValue(v bool) *result {
-	r.V = &v
-
-	return r
-}
-
-func (t *Tree) roundTrip(fin *[]*result, n *Node, r *result) {
-
-	if n.V == -1 {
-		r.setValue(true)
-		*fin = append(*fin, r)
-		//spew.Dump("fin: ", fin)
-	}
-
-	if n.V == 0 {
-		r.setValue(false)
-		*fin = append(*fin, r)
-		//spew.Dump("fin: ", fin)
-	}
-
-	if len(n.Connectors) == 4 {
-		spew.Dump("node:", n)
-		spew.Dump("connectors:", n.Connectors)
-	}
-
-	for _, conn := range n.Connectors {
-		nextNode := conn.Next
-		res := &result{
-			Values: append(r.Values, nextNode.V),
-			Jumps:  append(r.Jumps, conn.V),
-		}
-
-		t.roundTrip(fin, nextNode, res)
-	}
-}
-
-func (t *Tree) RoundTrip() *[]*result {
-	n := t.Root
-	res := &result{
-		V:      nil,
-		Values: []int{n.V},
-		Jumps:  []int{},
-	}
-
-	var fin = []*result{res}
-
-	t.roundTrip(&fin, n, res)
-	spew.Dump("finRes: ", fin)
-
-	return &fin
-}
+//type result struct {
+//	V      *bool
+//	Values []int
+//	Jumps  []int
+//}
+//
+//func (r *result) setValue(v bool) *result {
+//	r.V = &v
+//
+//	return r
+//}
+//
+//func (t *Tree) roundTrip(fin *[]*result, n *Node, r *result) {
+//
+//	if n.V == -1 {
+//		r.setValue(true)
+//		*fin = append(*fin, r)
+//		//spew.Dump("fin: ", fin)
+//	}
+//
+//	if n.V == 0 {
+//		r.setValue(false)
+//		*fin = append(*fin, r)
+//		//spew.Dump("fin: ", fin)
+//	}
+//
+//	if len(n.Connectors) == 4 {
+//		spew.Dump("node:", n)
+//		spew.Dump("connectors:", n.Connectors)
+//	}
+//
+//	for _, conn := range n.Connectors {
+//		nextNode := conn.Next
+//		res := &result{
+//			Values: append(r.Values, nextNode.V),
+//			Jumps:  append(r.Jumps, conn.V),
+//		}
+//
+//		t.roundTrip(fin, nextNode, res)
+//	}
+//}
+//
+//func (t *Tree) RoundTrip() *[]*result {
+//	n := t.Root
+//	res := &result{
+//		V:      nil,
+//		Values: []int{n.V},
+//		Jumps:  []int{},
+//	}
+//
+//	var fin = []*result{res}
+//
+//	t.roundTrip(&fin, n, res)
+//	spew.Dump("finRes: ", fin)
+//
+//	return &fin
+//}
