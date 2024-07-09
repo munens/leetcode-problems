@@ -4,6 +4,7 @@ import (
 	"55-can-jump/tree"
 	"fmt"
 	"github.com/davecgh/go-spew/spew"
+	"github.com/kr/pretty"
 )
 
 func CanJumpTree(nums []int) {
@@ -12,7 +13,15 @@ func CanJumpTree(nums []int) {
 
 	t := tree.NewTree(nums)
 
-	spew.Dump(t)
+	spew.Dump(t.Root)
+	if _, err := pretty.Println(t.Root); err != nil {
+		fmt.Println("Unable to print: ", err)
+	}
+
+	spew.Dump(t.Root.Connectors[0].Next.Connectors)
+	if _, err := pretty.Println(t.Root.Connectors[0].Next.Connectors); err != nil {
+		fmt.Println("Unable to print: ", err)
+	}
 
 	//t.RoundTrip()
 }
