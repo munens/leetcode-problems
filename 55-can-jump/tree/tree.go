@@ -1,47 +1,55 @@
 package tree
 
-import (
-	"github.com/davecgh/go-spew/spew"
-)
-
 type Connector struct {
-	Prev *Node
-	V    int
-	Next *Node
+	Prev  *Node
+	JumpV int
+	Next  *Node
 }
 
 type Node struct {
 	V          int
-	Connectors []Connector
+	Connectors []*Connector
+	IsLeaf     bool
 }
 
 type Tree struct {
-	Root *Node
-	Size int
+	Root      *Node
+	NodeCount int
+	HasLeaf   bool
 }
 
-func NewNode(v int) *Node {
-	n := &Node{
-		V: v,
+func (t *Tree) NewNode(v int, isLeaf bool) *Node {
+
+	if isLeaf {
+		if t.HasLeaf != true {
+			t.HasLeaf = true
+		}
 	}
 
-	var connectors []Connector
+	n := &Node{
+		V:      v,
+		IsLeaf: isLeaf,
+	}
+
+	var connectors []*Connector
 	for i := 1; i <= v; i++ {
-		connectors = append(connectors, Connector{
-			Prev: n,
-			V:    i,
+		connectors = append(connectors, &Connector{
+			Prev:  n,
+			JumpV: i,
 		})
 	}
 
 	n.Connectors = connectors
 
+	t.NodeCount += 1
 	return n
 }
 
-func NewLeaf() *Node {
+func (t *Tree) NewLeaf() *Node {
 	n := &Node{
 		V: -1,
 	}
+	t.NodeCount += 1
 
 	return n
 }
@@ -49,76 +57,94 @@ func NewLeaf() *Node {
 func (t *Tree) build(nums []int, n *Node, idx int) {
 	finIdx := len(nums) - 1
 	for _, conn := range n.Connectors {
-		i := idx + conn.V
+		i := idx + conn.JumpV
 
 		var n *Node
 		if i > finIdx {
-			n = NewLeaf()
+			n = t.NewNode(-1, true)
 		} else {
 			v := nums[i]
-			n = NewNode(v)
+			n = t.NewNode(v, i == finIdx)
 		}
 
 		conn.Next = n
-		//spew.Dump("conn", conn)
-		//spew.Dump("conn.Next", conn.Next)
-
-		//_, err1 := pretty.Println("conn", conn)
-		//_, err2 := pretty.Println("conn.Next", conn.Next)
-
-		//if err1 != nil || err2 != nil {
-		//	fmt.Println("err1: ", err1, ", err2: ", err2)
-		//}
 
 		t.build(nums, n, i)
 	}
 }
 
-func NewTree(nums []int) *Tree {
-	root := NewNode(nums[0])
-	t := &Tree{
-		Root: root,
+func (t *Tree) canBuildToLeaf(nums []int, n *Node, idx int) bool {
+	finIdx := len(nums) - 1
+	for _, conn := range n.Connectors {
+		i := idx + conn.JumpV
+
+		var n *Node
+		if i > finIdx {
+			n = t.NewNode(-1, true)
+			return true
+		} else {
+			v := nums[i]
+			n = t.NewNode(v, i == finIdx)
+
+			if i == finIdx {
+				return true
+			}
+		}
+
+		conn.Next = n
+
+		return t.canBuildToLeaf(nums, n, i)
 	}
+
+	return false
+}
+
+func NewTree(nums []int) *Tree {
+	t := &Tree{}
+	root := t.NewNode(nums[0], len(nums) == 1 && nums[0] == 0)
+	t.Root = root
 	t.build(nums, t.Root, 0)
 	return t
 }
 
+func CanBuildToTree(nums []int) bool {
+	t := &Tree{}
+	root := t.NewNode(nums[0], len(nums) == 1 && nums[0] == 0)
+	t.Root = root
+	return t.canBuildToLeaf(nums, t.Root, 0)
+}
+
 type result struct {
-	V      *bool
+	V      bool
 	Values []int
 	Jumps  []int
 }
 
-func (r *result) setValue(v bool) *result {
-	r.V = &v
-
-	return r
-}
-
 func (t *Tree) roundTrip(fin *[]*result, n *Node, r *result) {
 
-	if n.V == -1 {
-		r.setValue(true)
-		*fin = append(*fin, r)
-		//spew.Dump("fin: ", fin)
-	}
-
-	if n.V == 0 {
-		r.setValue(false)
-		*fin = append(*fin, r)
-		//spew.Dump("fin: ", fin)
-	}
-
-	if len(n.Connectors) == 4 {
-		spew.Dump("node:", n)
-		spew.Dump("connectors:", n.Connectors)
+	if n.IsLeaf {
+		r.V = true
+		f := *r
+		*fin = append(*fin, &f)
+		return
 	}
 
 	for _, conn := range n.Connectors {
 		nextNode := conn.Next
+
+		// Make a copy of r.Values
+		values := make([]int, len(r.Values))
+		copy(values, r.Values)
+		values = append(values, nextNode.V)
+
+		// Make a copy of r.Jumps
+		jumps := make([]int, len(r.Jumps))
+		copy(jumps, r.Jumps)
+		jumps = append(jumps, conn.JumpV)
+
 		res := &result{
-			Values: append(r.Values, nextNode.V),
-			Jumps:  append(r.Jumps, conn.V),
+			Values: values,
+			Jumps:  jumps,
 		}
 
 		t.roundTrip(fin, nextNode, res)
@@ -128,15 +154,18 @@ func (t *Tree) roundTrip(fin *[]*result, n *Node, r *result) {
 func (t *Tree) RoundTrip() *[]*result {
 	n := t.Root
 	res := &result{
-		V:      nil,
+		V:      false,
 		Values: []int{n.V},
 		Jumps:  []int{},
 	}
 
-	var fin = []*result{res}
+	var fin []*result
 
 	t.roundTrip(&fin, n, res)
-	spew.Dump("finRes: ", fin)
 
 	return &fin
+}
+
+func CanJump(nums []int) bool {
+	return CanBuildToTree(nums)
 }
