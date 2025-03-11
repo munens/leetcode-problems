@@ -54,6 +54,11 @@ func getJumpPossibilities(nums []int) [][]int {
 	var poss [][]int
 	for i := 0; i < len(nums); i++ {
 		var jumps []int
+
+		if nums[i] == 0 {
+			jumps = append(jumps, 0)
+		}
+
 		for j := 1; j <= nums[i]; j++ {
 			jumps = append(jumps, j)
 		}
