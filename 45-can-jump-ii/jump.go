@@ -54,6 +54,11 @@ func getJumpPossibilities(nums []int) [][]int {
 	var poss [][]int
 	for i := 0; i < len(nums); i++ {
 		var jumps []int
+
+		if nums[i] == 0 {
+			jumps = append(jumps, 0)
+		}
+
 		for j := 1; j <= nums[i]; j++ {
 			jumps = append(jumps, j)
 		}
@@ -70,62 +75,104 @@ func getJumpPossibilities(nums []int) [][]int {
 // arr = [2, 3, 0, 1, 4]
 // curr = [[1, 2], [1, 2, 3], [0], [1], [1, 2, 3, 4]]
 
+// arr = [2, 5, 0, 0, 0]
+// curr = [[1, 2], [1, 2, 3, 4, 5], [0], [0], [0]]
+
 // currObj = {
 // 	0:
 // }
 
 func getJumps(res *[][]int, poss [][]int, inner []int, acc []int, outerIdx int) {
-	possLen := len(poss)
+	possLen := len(poss) - 1
 	for i := 0; i < len(inner); i++ {
 		v := inner[i]
-		fmt.Println("i = ", i, ", v = ", v, ", outerIdx = ", outerIdx, ", inner = ", inner, ", acc = ", acc)
-		var newOuterIdx int
-		if v == 0 {
+
+		fmt.Println("i = ", i, ", v = ", v, ", outerIdx = ", outerIdx, ", inner = ", inner, ", acc = ", acc, "newOuterIdx = ", v+outerIdx)
+
+		if outerIdx == possLen {
+			*res = append(*res, acc)
+			fmt.Println("-----------------------------")
 			break
 		} else {
-			newOuterIdx = v + outerIdx
-		}
-		fmt.Println("newOuterIdx = ", newOuterIdx)
 
-		if newOuterIdx >= possLen {
-			if newOuterIdx == possLen {
-				*res = append(*res, acc)
-				fmt.Println(res)
-				fmt.Println("--------------------")
-			} else {
+			newAcc := append(acc, v)
+
+			if v == 0 {
+				fmt.Println("kill")
 				break
 			}
-		} else {
-			getJumps(res, poss, poss[newOuterIdx], append(acc, v), newOuterIdx)
+
+			newOuterIdx := v + outerIdx
+			if newOuterIdx > possLen {
+				newOuterIdx = possLen
+			}
+
+			getJumps(res, poss, poss[newOuterIdx], newAcc, newOuterIdx)
 		}
 	}
 }
 
-func jump(nums []int) {
+func getMinJumps(jumps [][]int) int {
+	min := len(jumps[0])
+	for _, j := range jumps {
+		if len(j) < min {
+			min = len(j)
+		}
+	}
+
+	return min
+}
+
+func jump(nums []int) int {
 	poss := getJumpPossibilities(nums)
 
 	fmt.Println("poss => ", poss)
 	var jumps [][]int
 	getJumps(&jumps, poss, poss[0], []int{}, 0)
-	fmt.Println("jumps => ", jumps)
+	fmt.Printf("jumps => %v \n", jumps)
+
+	return getMinJumps(jumps)
 }
 
 func main() {
+
+	s := "min. number of jumps: %d \n\n"
+
 	v0 := []int{2, 3, 1, 1, 4}
 	fmt.Println("v0 = ", v0)
-	jump(v0)
-
-	fmt.Println("\n")
+	fmt.Printf(s, jump(v0))
 
 	v1 := []int{2, 3, 0, 1, 4}
 	fmt.Println(v1, " => ", v1)
-	jump(v1)
-
-	fmt.Println("\n")
+	fmt.Printf(s, jump(v1))
 
 	v2 := []int{2, 5, 0, 0, 0}
 	fmt.Println(v2, " => ", v2)
-	jump(v2)
+	fmt.Printf(s, jump(v2))
+
+	v3 := []int{0}
+	fmt.Println(v3, " => ", v3)
+	fmt.Printf(s, jump(v3))
+
+	v4 := []int{2, 0, 0}
+	fmt.Println(v4, " => ", v4)
+	fmt.Printf(s, jump(v4))
+
+	v5 := []int{2, 3, 4, 1, 4}
+	fmt.Println(v5, " => ", v5)
+	fmt.Printf(s, jump(v5))
+
+	v6 := []int{2, 3, 4, 1, 4, 0}
+	fmt.Println(v6, " => ", v6)
+	fmt.Printf(s, jump(v6))
+
+	v7 := []int{5, 0, 0, 0, 1, 0}
+	fmt.Println(v7, " => ", v7)
+	fmt.Printf(s, jump(v7))
+
+	//v7 := []int{8, 2, 4, 4, 4, 9, 5, 2, 5, 8, 8, 0, 8, 6, 9, 1, 1, 6, 3, 5, 1, 2, 6, 6, 0, 4, 8, 6, 0, 3, 2, 8, 7, 6, 5, 1, 7, 0, 3, 4, 8, 3, 5, 9, 0, 4, 0, 1, 0, 5, 9, 2, 0, 7, 0, 2, 1, 0, 8, 2, 5, 1, 2, 3, 9, 7, 4, 7, 0, 0, 1, 8, 5, 6, 7, 5, 1, 9, 9, 3, 5, 0, 7, 5}
+	//fmt.Println(v7, " => ", v7)
+	//jump(v7)
 
 	//
 	//v3 := []int{0}
